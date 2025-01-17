@@ -1,0 +1,48 @@
+
+class BirdFactory(lv, type, birdsCount)
+
+   switch lv
+   case 1
+       if type == STANDARD
+        return Standard(30.0, 7.0)
+
+   case 2
+        size = 25.0
+        switch type
+            case STANDARD
+                if birdsCount == 0
+                    return Standard(size, 7.0, 12)
+                else
+                    return Standard(size, 5.0, 12)
+            case SINKER
+                return Sinker(size)
+        assert(false)
+        return null
+
+
+   case 3
+        size = 20.0
+        switch type
+            case STANDARD
+                return Standard(size, 5.0, 15)
+            case SINKER
+                return Sinker(size, 4.0, 22)
+            case FLOATER
+                return Floater(size)
+        assert(false)
+        return null
+
+
+   case 4
+        size = 15.0
+        switch type
+            case STANDARD
+                return Standard(size, 4.0, 18)
+            case SINKER
+                return Sinker(size, 3.5, 25)
+            case FLOATER
+                return Floater(size, 4.0, 25)
+            case CRAZY
+                return Crazy(size)
+        assert(false)
+        return null
