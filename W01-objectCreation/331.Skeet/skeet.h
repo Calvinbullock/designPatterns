@@ -45,7 +45,7 @@ public:
     bool isPlaying() const { return time.isPlaying();  }
 private:
     // generate new birds
-    void spawn();                  
+    void spawn();
     void drawBackground(double redBack, double greenBack, double blueBack) const;
     void drawTimer(double percent,
                    double redFore, double greenFore, double blueFore,
