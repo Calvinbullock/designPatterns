@@ -1,0 +1,7 @@
+Structure charts are really great for understanding how functions interact, and loved how many you added. But they hide some of the complexity. I know you are trying to improve spawn, since you called it out. So show a snippet of it so that the complexity of that function can be seen.
+
+Part of the power of the Factory is that it allows you to write code without a bunch of if or case statements and enables you to add new functionality without changing the interface. The right way to have designed what you did here was to have a createBird function that took a birdType and a level. It then could have called one of the other functions. That being said, this really was an Abstract Factory design. You create a factory for the level you are going into, then just use the createBird function on the Concrete Factory representing the level factory you just created.
+
+What does spawn look like in the after? Pseudocode showing one of the levels should have been present here to show how the pattern impacted the code.
+
+Last comment, though I took no points away for this one. You have actually changed the functionality of the code. In level two, the Standard bird will have a speed of 5 in some cases, and a speed of 7 in others. Currently, you have no way for that situation to occur.
