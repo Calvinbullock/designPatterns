@@ -1,19 +1,9 @@
 
+#pragma once
+
 #include <cassert>
-#include <string>
-#include <sstream>
-
-#include "position.h"
-#include "uiInteract.h"
+#include <iostream>
 #include "bird.h"
-#include "bullet.h"
-#include "effect.h"
-#include "gun.h"
-#include "time.h"
-#include "score.h"
-#include "points.h"
-
-using namespace std;
 
 enum Birdtype {
    STANDARD,
