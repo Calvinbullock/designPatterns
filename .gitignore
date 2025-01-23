@@ -6,6 +6,8 @@ objectCreation-W01/331.Skeet/Skeet.filters
 objectCreation-W01/331.Skeet/Skeet.user
 objectCreation-W01/331.Skeet/packages.config
 
+*.sln
+*/*.pdf
 */*.docx#
 */*.docx
 */*.drawio
