@@ -2,25 +2,20 @@
 
 //
 // NOTE: Base
-//
 class DrawingStratagy
 {
 
 public:
-   //
    // Constructors
    DrawingStratagy() {}
 
-   //
-   // Getters / Setters
-
-private:
+   // Draw
+   virtual void Draw() = 0;
 };
 
 
 //
 // NOTE: Standard
-//
 class StandardStratagy
 {
 
@@ -29,16 +24,13 @@ public:
    // Constructors
    StandardStratagy() {}
 
-   //
-   // Getters / Setters
-
-private:
+   // Draw
+   virtual void Draw() = 0;
 };
 
 
 //
 // NOTE: Floater
-//
 class FloaterStatagy
 {
 
@@ -47,16 +39,13 @@ public:
    // Constructors
    FloaterStatagy() {}
 
-   //
-   // Getters / Setters
-
-private:
+   // Draw
+   virtual void Draw() = 0;
 };
 
 
 //
 // NOTE: Crazy
-//
 class CrazyStratagy
 {
 
@@ -65,16 +54,13 @@ public:
    // Constructors
    CrazyStratagy() {}
 
-   //
-   // Getters / Setters
-
-private:
+   // Draw
+   virtual void Draw() = 0;
 };
 
 
 //
 // NOTE: Sinker
-//
 class SinkerStatagy
 {
 
@@ -83,8 +69,6 @@ public:
    // Constructors
    SinkerStatagy() {}
 
-   //
-   // Getters / Setters
-
-private:
+   // Draw
+   virtual void Draw() = 0;
 };
