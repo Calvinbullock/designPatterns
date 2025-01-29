@@ -7,12 +7,14 @@ objectCreation-W01/331.Skeet/Skeet.user
 objectCreation-W01/331.Skeet/packages.config
 
 *.sln
+*.zip
+
+# docs
 */*.pdf
 */*.docx#
 */*.docx
 */*.drawio
 
-*/*.filters
+*.filters
 */*.user
-*/*.vcxproj
-*/*.user
+*.vcxproj*
