@@ -23,10 +23,10 @@ protected:
    double radius;             // the size (radius) of the flyer
    bool dead;                 // is this flyer dead?
    int points;                // how many points is this worth?
-
+   
 public:
    Bird() : dead(false), points(0), radius(1.0) { }
-
+   
    // setters
    void operator=(const Position    & rhs) { pt = rhs;    }
    void operator=(const Velocity & rhs) { v = rhs;     }
