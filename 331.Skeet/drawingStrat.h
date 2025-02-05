@@ -86,7 +86,6 @@ inline void drawDisk(const Position& center, double radius,
 
 //
 // NOTE: Base
-#include "position.h"
 class DrawingStratagy
 {
 
