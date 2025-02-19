@@ -52,7 +52,6 @@ public:
       if (random(0, 4 * 30) == 1)
          birds.push_back(new Standard(size, 7.0));
 
-      std::cout << "here" << birds.size() << std::endl;
       return true;
    }
 };
