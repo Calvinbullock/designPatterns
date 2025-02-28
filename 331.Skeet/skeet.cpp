@@ -25,7 +25,7 @@ using namespace std;
 #ifdef _WIN32
 #include <stdio.h>
 #include <stdlib.h>
-#include <GL/glut.h>         // OpenGL library we copied 
+#include <GL/glut.h>         // OpenGL library we copied
 #define _USE_MATH_DEFINES
 #include <math.h>
 #define GLUT_TEXT GLUT_BITMAP_HELVETICA_12
@@ -35,90 +35,90 @@ using namespace std;
  * SKEET ANIMATE
  * move the gameplay by one unit of time
  ************************/
-void Skeet::animate()
+void SkeetLogic::animate()
 {
-   time++;
-   
+   storage.getTime()++;
+
    // if status, then do not move the game
-   if (time.isStatus())
+   if (storage.getTime().isStatus())
    {
       // get rid of the bullets and the birds without changing the score
-      birds.clear();
-      bullets.clear();
-      effects.clear();
-      points.clear();
+      storage.getBirds().clear();
+      storage.getBullets().clear();
+      storage.getEffects().clear();
+      storage.getPoints().clear();
       return;
    }
-   
+
    // spawn
    spawn();
-   
+
    // move the birds and the bullets
-   for (auto element : birds)
+   for (auto element : storage.getBirds())
    {
       element->advance();
-      hitRatio.adjust(element->isDead() ? -1 : 0);
+      storage.getHitRatio().adjust(element->isDead() ? -1 : 0);
    }
-   for (auto bullet : bullets)
-      bullet->move(effects);
-   for (auto effect : effects)
+   for (auto bullet : storage.getBullets())
+      bullet->move(storage.getEffects());
+   for (auto effect : storage.getEffects())
       effect->fly();
-   for (auto & pts : points)
+   for (auto & pts : storage.getPoints())
       pts.update();
-      
+
    // hit detection
-   for (auto element : birds)
-      for (auto bullet : bullets)
+   for (auto element : storage.getBirds())
+      for (auto bullet : storage.getBullets())
          if (!element->isDead() && !bullet->isDead() &&
              element->getRadius() + bullet->getRadius() >
              minimumDistance(element->getPosition(), element->getVelocity(),
                              bullet->getPosition(),  bullet->getVelocity()))
          {
             for (int i = 0; i < 25; i++)
-               effects.push_back(new Fragment(bullet->getPosition(), bullet->getVelocity()));
+               storage.getEffects().push_back(new Fragment(bullet->getPosition(), bullet->getVelocity()));
             element->kill();
             bullet->kill();
-            hitRatio.adjust(1);
+            storage.getHitRatio().adjust(1);
             bullet->setValue(-(element->getPoints()));
             element->setPoints(0);
          }
-   
+
    // remove the zombie birds
-   for (auto it = birds.begin(); it != birds.end();)
+   for (auto it = storage.getBirds().begin(); it != storage.getBirds().end();)
       if ((*it)->isDead())
       {
          if ((*it)->getPoints())
-            points.push_back(Points((*it)->getPosition(), (*it)->getPoints()));
-         score.adjust((*it)->getPoints());
-         it = birds.erase(it);
+            storage.getPoints().push_back(Points((*it)->getPosition(), (*it)->getPoints()));
+         storage.getScore().adjust((*it)->getPoints());
+         it = storage.getBirds().erase(it);
       }
       else
          ++it;
-       
+
    // remove zombie bullets
-   for (auto it = bullets.begin(); it != bullets.end(); )
+   for (auto it = storage.getBullets() .begin(); it != storage.getBullets().end(); )
       if ((*it)->isDead())
       {
-         (*it)->death(bullets);
+         (*it)->death(storage.getBullets());
          int value = -(*it)->getValue();
-         points.push_back(Points((*it)->getPosition(), value));
-         score.adjust(value);
-         it = bullets.erase(it);
+         storage.getPoints().push_back(Points((*it)->getPosition(), value));
+         storage.getScore().adjust(value);
+         it = storage.getBullets().erase(it);
       }
       else
          ++it;
-   
+
    // remove zombie fragments
-   for (auto it = effects.begin(); it != effects.end();)
+   for (auto it = storage.getEffects().begin(); it != storage.getEffects().end();)
       if ((*it)->isDead())
-         it = effects.erase(it);
+         it = storage.getEffects().erase(it);
       else
          ++it;
 
    // remove expired points
-   for (auto it = points.begin(); it != points.end();)
+   for (auto it = storage.getPoints().begin(); it != storage.getPoints().end();)
       if ((*it).isDead())
-         it = points.erase(it);
+         it = storage.getPoints().erase(it);
       else
          ++it;
 }
@@ -128,16 +128,16 @@ void Skeet::animate()
  * Fill in the background
  *  INPUT color   Background color
  *************************************************************************/
-void Skeet::drawBackground(double redBack, double greenBack, double blueBack) const
+void SkeetLogic::drawBackground(double redBack, double greenBack, double blueBack) const
 {
    glBegin(GL_TRIANGLE_FAN);
 
    // two rectangles is the fastest way to fill the screen.
    glColor3f((GLfloat)redBack /* red % */, (GLfloat)greenBack /* green % */, (GLfloat)blueBack /* blue % */);
    glVertex2f((GLfloat)0.0, (GLfloat)0.0);
-   glVertex2f((GLfloat)dimensions.getX(), (GLfloat)0.0);
-   glVertex2f((GLfloat)dimensions.getX(), (GLfloat)dimensions.getY());
-   glVertex2f((GLfloat)0.0, (GLfloat)dimensions.getY());
+   glVertex2f((GLfloat)storage.getDimensions().getX(), (GLfloat)0.0);
+   glVertex2f((GLfloat)storage.getDimensions().getX(), (GLfloat)storage.getDimensions().getY());
+   glVertex2f((GLfloat)0.0, (GLfloat)storage.getDimensions().getY());
 
    glEnd();
 }
@@ -149,13 +149,13 @@ void Skeet::drawBackground(double redBack, double greenBack, double blueBack) co
  *        Foreground  Foreground color
  *        Background  Background color
  *************************************************************************/
-void Skeet::drawTimer(double percent,
+void SkeetLogic::drawTimer(double percent,
                      double redFore, double greenFore, double blueFore,
                      double redBack, double greenBack, double blueBack) const
 {
    double radians;
 
-   GLfloat length = (GLfloat)dimensions.getX();
+   GLfloat length = (GLfloat)storage.getDimensions().getX();
    GLfloat half = length / (GLfloat)2.0;
 
    // do the background stuff
@@ -239,7 +239,7 @@ void Skeet::drawTimer(double percent,
  *   INPUT  topLeft   The top left corner of the text
  *          text      The text to be displayed
  ************************************************************************/
-void drawText(const Position& topLeft, const char* text) 
+void drawText(const Position& topLeft, const char* text)
 {
    void* pFont = GLUT_TEXT;
    glColor3f((GLfloat)1.0 /* red % */, (GLfloat)1.0 /* green % */, (GLfloat)1.0 /* blue % */);
@@ -260,11 +260,11 @@ void drawText(const Position & topLeft, const string & text)
  * DRAW BULLSEYE
  * Put a bullseye on the screen
  ************************/
-void Skeet::drawBullseye(double angle) const
+void SkeetLogic::drawBullseye(double angle) const
 {
    // find where we are pointing
-   double distance = dimensions.getX();
-   GLfloat x = dimensions.getX() - distance * cos(angle);
+   double distance = storage.getDimensions().getX();
+   GLfloat x = storage.getDimensions().getX() - distance * cos(angle);
    GLfloat y = distance * sin(angle);
 
    // draw the crosshairs
@@ -279,7 +279,7 @@ void Skeet::drawBullseye(double angle) const
    glVertex2f(x, y + 10.0);
 
    glColor3f((GLfloat)0.2, (GLfloat)0.2, (GLfloat)0.2);
-   glVertex2f(dimensions.getX(), 0.0);
+   glVertex2f(storage.getDimensions().getX(), 0.0);
    glVertex2f(x, y);
 
    // Complete drawing
@@ -290,63 +290,63 @@ void Skeet::drawBullseye(double angle) const
  * SKEET DRAW LEVEL
  * output everything that will be on the screen
  ************************/
-void Skeet::drawLevel() const
+void SkeetLogic::drawLevel() const
 {
    // output the background
-   drawBackground(time.level() * .1, 0.0, 0.0);
-   
+   drawBackground(storage.getTime().level() * .1, 0.0, 0.0);
+
    // draw the bullseye
-   if (bullseye)
-      drawBullseye(gun.getAngle());
+   if (storage.isBullseye())
+      drawBullseye(storage.getGun().getAngle());
 
    // output the gun
-   gun.display();
-         
+   storage.getGun().display();
+
    // output the birds, bullets, and fragments
-   for (auto& pts : points)
+   for (auto& pts : storage.getPoints())
       pts.show();
-   for (auto effect : effects)
+   for (auto effect : storage.getEffects())
       effect->render();
-   for (auto bullet : bullets)
+   for (auto bullet : storage.getBullets())
       bullet->output();
-   for (auto element : birds)
+   for (auto element : storage.getBirds())
       element->draw();
-   
+
    // status
-   drawText(Position(10,                         dimensions.getY() - 30), score.getText()  );
-   drawText(Position(dimensions.getX() / 2 - 30, dimensions.getY() - 30), time.getText()   );
-   drawText(Position(dimensions.getX() - 110,    dimensions.getY() - 30), hitRatio.getText());
+   drawText(Position(10,                                      storage.getDimensions().getY() - 30), storage.getScore().getText()  );
+   drawText(Position(storage.getDimensions().getX() / 2 - 30, storage.getDimensions().getY() - 30), storage.getTime().getText()   );
+   drawText(Position(storage.getDimensions().getX() - 110,    storage.getDimensions().getY() - 30), storage.getHitRatio().getText());
 }
 
 /************************
  * SKEET DRAW STATUS
  * place the status message on the center of the screen
  ************************/
-void Skeet::drawStatus() const
+void SkeetLogic::drawStatus() const
 {
    // output the text information
    ostringstream sout;
-   if (time.isGameOver())
+   if (storage.getTime().isGameOver())
    {
       // draw the end of game message
-      drawText(Position(dimensions.getX() / 2 - 30, dimensions.getY() / 2 + 10),
+      drawText(Position(storage.getDimensions().getX() / 2 - 30, storage.getDimensions().getY() / 2 + 10),
                "Game Over");
 
       // draw end of game status
-      drawText(Position(dimensions.getX() / 2 - 30, dimensions.getY() / 2 - 10),
-               score.getText());
+      drawText(Position(storage.getDimensions().getX() / 2 - 30, storage.getDimensions().getY() / 2 - 10),
+               storage.getTime().getText());
    }
    else
    {
       // output the status timer
-      drawTimer(1.0 - time.percentLeft(),
-                     (time.level() - 0.0) * .1, 0.0, 0.0,
-                     (time.level() - 1.0) * .1, 0.0, 0.0);
+      drawTimer(1.0 - storage.getTime().percentLeft(),
+                     (storage.getTime().level() - 0.0) * .1, 0.0, 0.0,
+                     (storage.getTime().level() - 1.0) * .1, 0.0, 0.0);
 
       // draw the message giving a countdown
-      sout << "Level " << time.level()
-           << " begins in " << time.secondsLeft() << " seconds";
-      drawText(Position(dimensions.getX() / 2 - 110, dimensions.getY() / 2 - 10),
+      sout << "Level " << storage.getTime().level()
+           << " begins in " << storage.getTime().secondsLeft() << " seconds";
+      drawText(Position(storage.getDimensions().getX() / 2 - 110, storage.getDimensions().getY() / 2 - 10),
          sout.str());
    }
 }
@@ -355,14 +355,17 @@ void Skeet::drawStatus() const
  * SKEET INTERACT
  * handle all user input
  ************************/
-void Skeet::interact(const UserInput & ui)
+void SkeetLogic::interact(const UserInput & ui)
 {
+   Time time = storage.getTime();
+   Gun gun = storage.getGun();
+
    // reset the game
    if (time.isGameOver() && ui.isSpace())
-   { 
+   {
       time.reset();
-      score.reset();
-      hitRatio.reset();
+      storage.getScore().reset();
+      storage.getHitRatio().reset();
       return;
    }
 
@@ -379,16 +382,16 @@ void Skeet::interact(const UserInput & ui)
    // bombs can be shot at level 3 and higher
    else if (ui.isB() && time.level() > 2)
       p = new Bomb(gun.getAngle());
-   
-   bullseye = ui.isShift();
+
+   storage.isBullseye() = ui.isShift();
 
    // add something if something has been added
    if (nullptr != p)
-      bullets.push_back(p);
-   
+      storage.getBullets().push_back(p);
+
    // send movement information to all the bullets. Only the missile cares.
-   for (auto bullet : bullets)
-      bullet->input(ui.isUp() + ui.isRight(), ui.isDown() + ui.isLeft(), ui.isB()); 
+   for (auto bullet : storage.getBullets())
+      bullet->input(ui.isUp() + ui.isRight(), ui.isDown() + ui.isLeft(), ui.isB());
 }
 
 /******************************************************************
@@ -411,10 +414,12 @@ int random(int min, int max)
  * SKEET SPAWN
  * lanuch new birds
  ************************/
-void Skeet::spawn()
+void SkeetLogic::spawn()
 {
+   std::list<Bird*> birds = storage.getBirds();
+
    double size;
-   switch (time.level())
+   switch (storage.getTime().level())
    {
       // in level 1 spawn big birds occasionally
       case 1:
@@ -422,12 +427,12 @@ void Skeet::spawn()
          // spawns when there is nothing on the screen
          if (birds.size() == 0 && random(0, 15) == 1)
             birds.push_back(new Standard(size, 7.0));
-         
+
          // spawn every 4 seconds
          if (random(0, 4 * 30) == 1)
             birds.push_back(new Standard(size, 7.0));
          break;
-         
+
       // two kinds of birds in level 2
       case 2:
          size = 25.0;
@@ -442,7 +447,7 @@ void Skeet::spawn()
          if (random(0, 3 * 30) == 1)
             birds.push_back(new Sinker(size));
          break;
-      
+
       // three kinds of birds in level 3
       case 3:
          size = 20.0;
@@ -460,7 +465,7 @@ void Skeet::spawn()
          if (random(0, 4 * 30) == 1)
             birds.push_back(new Floater(size));
          break;
-         
+
       // three kinds of birds in level 4
       case 4:
          size = 15.0;
@@ -481,7 +486,7 @@ void Skeet::spawn()
          if (random(0, 4 * 30) == 1)
             birds.push_back(new Crazy(size));
          break;
-         
+
       default:
          break;
    }
